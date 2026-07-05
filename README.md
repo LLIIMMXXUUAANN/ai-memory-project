@@ -2,6 +2,29 @@
 
 A collection of learning projects exploring long-term memory solutions for AI agents. Each project integrates a different memory provider with an LLM (Gemini) to demonstrate how persistent, per-user memory can ground conversational responses.
 
+## Choosing a Memory Layer
+
+Quick decision guide for picking a memory approach:
+
+- **Want to remember who the user is?** → Mem0
+- **Want to remember when things happened and how they link?** → Zep
+- **Want a stateful agent that never forgets its core state over months?** → Letta
+- **Want the agent to learn from its mistakes and update its own prompt?** → LangMem
+
+### Ranking for this repo's use case
+
+1. **Mem0** — user preference / fact memory, multi-user via `user_id` namespacing. Not time-aware: flat fact storage per user, no "this changed on date X" reasoning (timestamps exist for created/updated, but there's no bi-temporal validity model).
+2. **Zep** — knowledge graph + timestamps for complex, evolving data relationships. Multi-user **and** time-aware natively (Graphiti's bi-temporal graph tracks when a fact became valid/invalid), which is the direct fit for "each user, own long-term, time-related info" — not something you need to bolt together from two tools.
+
+Both Mem0 and Zep have solid per-user namespacing for multi-user SaaS use, which is why they're the two covered in this repo.
+
+**Not pursued yet (future work):**
+
+3. **Letta** — long-running autonomous agent framework. Skipped for now because it's a full agent architecture (its own runtime/server, self-editing memory blocks baked into the agent loop), not a memory layer you can drop into an existing agent — a much bigger adoption decision than Mem0/Zep.
+4. **LangMem** — procedural memory (the agent rewrites its own system prompt based on feedback), built on LangGraph. Skipped for now mainly to avoid locking into the LangChain/LangGraph ecosystem.
+
+**Also worth knowing about — the "wiki" pattern ([Karpathy's gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)):** an alternative to vector/graph memory where the LLM incrementally builds and maintains a structured markdown wiki (ingest → query → lint), rather than retrieving from raw documents or fact stores each time. It's a well-known and reportedly effective pattern — some community implementations run at real scale (thousands of pages, git-backed) — but it is explicitly "an idea file... designed to be copy pasted to your own LLM Agent," not a maintained product or SDK. No hosted service, versioning, or support — each adopter builds and maintains their own implementation. Famous, practically proven by third-party repos, but not production-graded in the way Mem0/Zep (as commercial APIs) are. Noted here as future exploration, not a current dependency.
+
 ## Projects
 
 ### [mem0-project](https://github.com/LLIIMMXXUUAANN/mem0-project)
